@@ -2,6 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+	config.ssh.forward_agent = true
 
 	# Based on Ubuntu Bionic 18.04; this is the default VM
 	# run `vagrant up bionic`
@@ -13,6 +14,7 @@ Vagrant.configure("2") do |config|
 			vb.gui = true
 			vb.name = "pynq_ubuntu_18_04"
 			vb.memory = "8192"
+			vb.cpus = "4"
 			vb.customize ["modifyvm", :id, "--vram", "128"]
 			vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
 			disk_image = File.join(File.dirname(File.expand_path(__FILE__)), 
@@ -46,6 +48,9 @@ Vagrant.configure("2") do |config|
 			chown -R vagrant:vagrant /workspace
 			chmod 777 -R /workspace
 		SHELL
+
+		bionic.vm.provision "shell",
+			inline: "dpkg --add-architecture i386"
 
 		bionic.vm.provision "shell",
 			inline: "apt-get update"

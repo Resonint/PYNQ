@@ -38,6 +38,8 @@ $(IMAGE_ROOT):
 
 $(BUILD_ROOT):
 	mkdir -p $@
+	mkdir -p $@/gcc-mb/.build/tarballs
+	cp -t $@/gcc-mb/.build/tarballs/ $@/../backup-tarballs/* 
 
 $(BOOT_ROOT):
 	mkdir -p $@

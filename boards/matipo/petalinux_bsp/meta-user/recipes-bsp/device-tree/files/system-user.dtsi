@@ -1,0 +1,55 @@
+/include/ "system-conf.dtsi"
+/ {
+	aliases {
+	    serial1 = &uart0;
+		serial0 = &uart1;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+		image_buf0: image_buf@0 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x38000000 0x08000000>; 
+			label = "image_buf0";
+		};
+	};
+	udmabuf@0 {
+		compatible = "ikwzm,u-dma-buf";
+		device-name = "udmabuf0";
+		size = <0x08000000>; // 128MiB
+		memory-region = <&image_buf0>;
+	};
+	xlnk {
+		compatible = "xlnx,xlnk-1.0";
+	};
+
+	gpio-poweroff {
+		compatible = "gpio-poweroff";
+		// Power Off signal is EMIO 0, EMIO starts at 54
+		gpios = <&gpio0 54 1>;
+		input;
+	};
+};
+
+&i2c0 {
+	clock-frequency = <100000>;
+	status = "okay";
+	
+	eeprom@50 {
+		compatible = "microchip,24c128", "atmel,24c128";
+		reg = <0x50>;
+        pagesize = <32>;
+	};
+};
+
+// https://support.xilinx.com/s/question/0D52E00006ihQOHSA2/kernel-panic-not-syncing-vfs-unable-to-mount-root-fs-on-unknownblock1792-in-sw-emulation-for-zedboard-platform?language=en_US
+&sdhci0 {
+	status = "okay";
+	xlnx,has-cd = <0x1>;
+	xlnx,has-power = <0x0>;
+	xlnx,has-wp = <0x1>;
+	disable-wp;
+};

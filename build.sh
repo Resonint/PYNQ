@@ -101,65 +101,8 @@ for b in $boards ; do
 	get_bitstreams "$script_dir/boards" "$b"
 done
 
-# enforce Pynq-Z2 projects to be rebuilt in case of missing XSA files
-if [[ ! -e $script_dir/boards/Pynq-Z2/base/base.xsa ]]; then
-	rm -f $script_dir/boards/Pynq-Z2/base/base.bit
-	rm -f $script_dir/boards/Pynq-Z2/base/base.hwh
-fi
-if [[ ! -e $script_dir/boards/Pynq-Z2/logictools/logictools.xsa ]]; then
-	rm -f $script_dir/boards/Pynq-Z2/logictools/logictools.bit
-	rm -f $script_dir/boards/Pynq-Z2/logictools/logictools.hwh
-fi
-
 # build all bitstreams for all the boards
 for b in $boards ; do
 	build_bitstreams "$script_dir/boards" "$b"
 done
 common_path="standalone_domain/bsp"
-
-# build IO Processor (IOP) binaries
-if [ ! -d $script_dir/pynq/lib/arduino/bsp_iop_arduino ] || \
-	[ ! -d $script_dir/pynq/lib/pmod/bsp_iop_pmod ] || \
-	[ ! -d $script_dir/pynq/lib/rpi/bsp_iop_rpi ]; then
-	cd $script_dir/boards/sw_repo
-	make clean && make XSA=../Pynq-Z2/base/base.xsa
-
-	cd $script_dir/boards/sw_repo
-	rm -rf bsp_iop_arduino_mb/iop_arduino_mb/$common_path/iop_arduino_mb/code
-	rm -rf bsp_iop_arduino_mb/iop_arduino_mb/$common_path/iop_arduino_mb/libsrc
-	cp -rf bsp_iop_arduino_mb/iop_arduino_mb/$common_path \
-		$script_dir/pynq/lib/arduino/bsp_iop_arduino
-	cd $script_dir/pynq/lib/arduino && make && make clean
-
-	cd $script_dir/boards/sw_repo
-	rm -rf bsp_iop_pmoda_mb/iop_pmoda_mb/$common_path/iop_pmoda_mb/code
-	rm -rf bsp_iop_pmoda_mb/iop_pmoda_mb/$common_path/iop_pmoda_mb/libsrc
-	cp -rf bsp_iop_pmoda_mb/iop_pmoda_mb/$common_path \
-		$script_dir/pynq/lib/pmod/bsp_iop_pmod
-	cd $script_dir/pynq/lib/pmod && make && make clean
-
-	cd $script_dir/boards/sw_repo
-	rm -rf bsp_iop_rpi_mb/iop_rpi_mb/$common_path/iop_rpi_mb/code
-	rm -rf bsp_iop_rpi_mb/iop_rpi_mb/$common_path/iop_rpi_mb/libsrc
-	cp -rf bsp_iop_rpi_mb/iop_rpi_mb/$common_path \
-		$script_dir/pynq/lib/rpi/bsp_iop_rpi
-
-	cd $script_dir/boards/sw_repo
-	make clean
-fi
-
-# build Logictools Controller Processor (LCP) binaries
-if [ ! -d $script_dir/pynq/lib/logictools/bsp_lcp_ar_mb ]; then
-	cd $script_dir/boards/sw_repo
-	make clean && make XSA=../Pynq-Z2/logictools/logictools.xsa
-
-	cd $script_dir/boards/sw_repo
-	rm -rf bsp_lcp_ar_mb/lcp_ar_mb/$common_path/lcp_ar_mb/code
-	rm -rf bsp_lcp_ar_mb/lcp_ar_mb/$common_path/lcp_ar_mb/libsrc
-	cp -rf bsp_lcp_ar_mb/lcp_ar_mb/$common_path \
-		$script_dir/pynq/lib/logictools/bsp_lcp_ar_mb
-	cd $script_dir/pynq/lib/logictools && make && make clean
-
-	cd $script_dir/boards/sw_repo
-	make clean
-fi
