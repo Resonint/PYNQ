@@ -1,1 +1,3 @@
 !petalinux_bsp/hardware_project/system.xsa
+!base/base.bit
+!base/base.hwh
