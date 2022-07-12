@@ -22,7 +22,11 @@ ${GCC_MB_WORKDIR}/samples: | ${GCC_MB_SOURCEDIR}/samples ${GCC_MB_WORKDIR}
 ${GCC_MB_WORKDIR}/patches: | ${GCC_MB_SOURCEDIR}/patches ${GCC_MB_WORKDIR}
 	cp -r ${GCC_MB_SOURCEDIR}/patches $@
 
-${NATIVE_BUILD_arm}: | ${GCC_MB_WORKDIR}/samples ${GCC_MB_WORKDIR}/patches
+${GCC_MB_WORKDIR}/.build/tarballs/expat-2.4.1.tar.bz2: ${GCC_MB_SOURCEDIR}/tarballs/expat-2.4.1.tar.bz2 ${GCC_MB_WORKDIR}
+	mkdir -p ${GCC_MB_WORKDIR}/.build/tarballs
+	cp -t ${GCC_MB_WORKDIR}/.build/tarballs/ ${GCC_MB_SOURCEDIR}/tarballs/*
+
+${NATIVE_BUILD_arm}: | ${GCC_MB_WORKDIR}/samples ${GCC_MB_WORKDIR}/patches ${GCC_MB_WORKDIR}/.build/tarballs/expat-2.4.1.tar.bz2
 	cd ${GCC_MB_WORKDIR} && ct-ng arm-unknown-linux-gnueabihf && sed -i -e 's:2.2.6:2.4.1:' .config && ct-ng build
 
 ${GCC_MB_WORKDIR}/arm/microblazeel-xilinx-elf/bin/mb-gcc: | ${NATIVE_BUILD_arm}

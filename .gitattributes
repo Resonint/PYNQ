@@ -33,6 +33,8 @@
 *.a binary -crlf
 *.bsp binary
 *.xsa binary
+*.bz2 binary
+*.gz binary
 
 # Populate git blob ID into __init__.py
 # This ID will always be tied to a specific release tag
