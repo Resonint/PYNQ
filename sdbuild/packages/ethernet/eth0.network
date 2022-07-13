@@ -1,0 +1,15 @@
+[Match]
+Name=eth0
+
+[Network]
+DHCP=yes
+
+[Address]
+Label=eth0:0
+Address=192.168.0.4/24
+Gateway=192.168.0.1
+
+[Address]
+Label=eth0:1
+Address=192.168.137.2/24
+Gateway=192.168.137.1
