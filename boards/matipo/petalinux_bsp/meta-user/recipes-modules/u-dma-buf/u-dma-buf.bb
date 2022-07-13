@@ -1,13 +1,13 @@
 SUMMARY = "Recipe for  build an external u-dma-buf Linux kernel module"
 SECTION = "PETALINUX/modules"
 LICENSE = "BSD-2-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=ef6b820d2233112d3f795c64b156a93b"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=bebf0492502927bef0741aa04d1f35f5"
 
 inherit module
 
 SRC_URI = "file://Makefile \
            file://u-dma-buf.c \
-	   file://LICENSE \
+           file://LICENSE \
           "
 
 S = "${WORKDIR}"

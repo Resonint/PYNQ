@@ -131,7 +131,8 @@ bsp_$1: $$(BSP_FILES_$1)
 PL_PROJ_$1 := $$(BUILD_ROOT_$1)/petalinux_project
 PL_CONFIG_$1 := $$(PL_PROJ_$1)/project-spec/configs/config
 PL_ROOTFS_CONFIG_$1 := $$(PL_PROJ_$1)/project-spec/configs/rootfs_config
-MODULES_$1 := $$(PL_PROJ_$1)/build/tmp/deploy/images/modules-plnx_$$(ARCH_$1).tgz
+# MODULES_$1 := $$(PL_PROJ_$1)/build/tmp/deploy/images/modules-plnx_$$(ARCH_$1).tgz
+ROOTFS_$1 := $$(PL_PROJ_$1)/images/linux/rootfs.tar.gz
 KERNEL_RPM_$1 := $$(PL_PROJ_$1)/build/tmp/deploy/rpm/kernel-devsrc-1.0-r0.plnx_$$(ARCH_$1).rpm
 PL_ENV_$1 := PYNQ_BOARDNAME=$1 FPGA_MANAGER=$$(FPGA_MANAGER_$1)
 
@@ -157,6 +158,7 @@ $$(PL_PROJ_$1): $$(BSP_TARGET_$1)
 	echo 'CONFIG_zocl=y' >> $$(PL_ROOTFS_CONFIG_$1)
 	echo 'CONFIG_opencl-headers-dev=y' >> $$(PL_ROOTFS_CONFIG_$1)
 	echo 'CONFIG_opencl-clhpp-dev=y' >> $$(PL_ROOTFS_CONFIG_$1)
+	echo 'CONFIG_u-dma-buf=y' >> $$(PL_ROOTFS_CONFIG_$1)
 	petalinux-config --silentconfig -p $$(PL_PROJ_$1)
 
 $$(BOOT_ROOT_$1)/BOOT.BIN : $$(BOOT_DEPENDS_$1) $$(BOOT_BITSTREAM_$1) | $$(BOOT_ROOT_$1)
@@ -195,9 +197,12 @@ $$(PL_PROJ_$1)/images/linux/pmufw.elf:  $$(PL_CONFIG_$1)
 $$(PL_PROJ_$1)/images/linux/bl31.elf:  $$(PL_CONFIG_$1)
 	$$(PL_ENV_$1) petalinux-build -c arm-trusted-firmware -p $$(PL_PROJ_$1)
 
-$$(MODULES_$1): $$(PL_PROJ_$1)/images/linux/$$(KERNEL_$$(ARCH_$1))
-	cp -f $$(PL_PROJ_$1)/build/tmp/deploy/images/*/modules--*.tgz \
-	$$(MODULES_$1)
+$$(ROOTFS_$1): $$(PL_CONFIG_$1)
+	$$(PL_ENV_$1) petalinux-build -c rootfs -p $$(PL_PROJ_$1)
+
+# $$(MODULES_$1): $$(PL_PROJ_$1)/images/linux/$$(KERNEL_$$(ARCH_$1))
+# 	cp -f $$(PL_PROJ_$1)/build/tmp/deploy/images/*/modules--*.tgz \
+# 	$$(MODULES_$1)
 
 $$(KERNEL_RPM_$1): $$(PL_CONFIG_$1)
 	$$(PL_ENV_$1) petalinux-build -c kernel-devsrc -p $$(PL_PROJ_$1)
@@ -222,13 +227,13 @@ endif
 STAGE4_DEPENDS_$1 := $$(foreach package, $$(STAGE4_PACKAGES_$1), $$(PACKAGE_BUILD_$$(package)_$1) $$(PACKAGE_BUILD_$$(package)))
 STAGING_$1 := $$(BUILD_ROOT)/$$(UBUNTU_RELEASE).$1
 
-$$(ROOT_$1) : $$(BASE_PATH_$1) $$(STAGE4_DEPENDS_$1) $$(MODULES_$1) $$(KERNEL_RPM_$1) | $$(CCACHEDIR)
+$$(ROOT_$1) : $$(BASE_PATH_$1) $$(STAGE4_DEPENDS_$1) $$(ROOTFS_$1) $$(KERNEL_RPM_$1) | $$(CCACHEDIR)
 	sudo rm -fr $$(STAGING_$1)
 	mkdir $$(STAGING_$1)
 	(cd $$(STAGING_$1) && sudo tar -xf $$(realpath $$<))
 	$$(PACKAGE_ENV_$1) $$(SCRIPT_DIR)/install_packages.sh $$(STAGING_$1) $$(STAGE4_PACKAGES_$1)
 	mkdir -p $$(BUILD_ROOT_$1)/modules
-	cd $$(BUILD_ROOT_$1)/modules && tar -xf $$(MODULES_$1)
+	cd $$(BUILD_ROOT_$1)/modules && tar -xf $$(ROOTFS_$1) ./lib/modules
 	sudo cp -r --no-preserve=ownership $$(BUILD_ROOT_$1)/modules/* $$(STAGING_$1)
 	rm -rf $$(BUILD_ROOT_$1)/modules
 	sudo mount -o bind /dev $$(STAGING_$1)/dev
@@ -381,6 +386,9 @@ sysroot: $(patsubst %, sysroot_%, $(BOARDS))
 bsp: $(patsubst %, bsp_%, $(BOARDS))
 
 dist: $(patsubst %, dist_%, $(USED_ARCH))
+
+# useful for debugging, e.g. make print-IMAGE_ROOT
+print-%  : ; @echo $* = $($*)
 
 # Default package clean target
 PACKAGE_CLEAN_%: ;
