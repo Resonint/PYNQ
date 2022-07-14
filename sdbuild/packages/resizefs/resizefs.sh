@@ -43,4 +43,6 @@ mkswap /var/swap
 echo "/var/swap none swap sw 0 0" >> /etc/fstab
 swapon /var/swap
 
+mount -a
+
 echo "Done!"
