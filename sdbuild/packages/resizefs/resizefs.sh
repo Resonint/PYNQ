@@ -9,7 +9,9 @@ exec >> /var/log/syslog
 exec 2>&1
 
 TGTDEV=/dev/mmcblk0
-TGTPART=/dev/mmcblk0p2
+TGTPART_ROOTFS=/dev/mmcblk0p2
+TGTPART_USERFS=/dev/mmcblk0p3
+TGTDIR_USERFS=/home/xilinx/user
 source /etc/environment
 
 if [[ ${RESIZED} -eq "1" ]]; then
@@ -17,25 +19,25 @@ if [[ ${RESIZED} -eq "1" ]]; then
 	exit 0
 fi
 
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${TGTDEV} 2>/dev/null
-	p # print the in-memory partition table
-	d # delete
-	2 # second partition
-	n #  new partition
-	p # primary partition
-	2 # second partition
-	  # default first sector
-	  # fill up the entire space
-	p # print the new partition table
-  	w # and we're done
-EOF
+# resize rootfs
+echo ",14G" | sfdisk -N 2 ${TGTDEV}
+partx -u ${TGTPART_ROOTFS}
+resize2fs ${TGTPART_ROOTFS}
 
-partx -u ${TGTPART}
-resize2fs ${TGTPART}
+# create userfs
+echo "," | sfdisk --append ${TGTDEV}
+partx -u ${TGTDEV}
+partx -u ${TGTPART_USERFS}
+mkfs.ext4 ${TGTPART_USERFS}
+mkdir -p ${TGTDIR_USERFS}
+chown xilinx:xilinx ${TGTDIR_USERFS}
+chmod +rw ${TGTDIR_USERFS}
+echo "${TGTPART_USERFS} ${TGTDIR_USERFS} ext4 defaults 0 0" >> /etc/fstab
+
 echo "RESIZED=1" | tee -a /etc/environment
-echo "Adding Swap"
 
-fallocate -l 512M /var/swap
+echo "Adding Swap"
+fallocate -l 2G /var/swap
 mkswap /var/swap
 echo "/var/swap none swap sw 0 0" >> /etc/fstab
 swapon /var/swap
