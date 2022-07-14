@@ -20,12 +20,12 @@ if [[ ${RESIZED} -eq "1" ]]; then
 fi
 
 # resize rootfs
-echo ",14G" | sfdisk -N 2 ${TGTDEV}
+echo ",14G" | sfdisk -N 2 ${TGTDEV} --force
 partx -u ${TGTPART_ROOTFS}
 resize2fs ${TGTPART_ROOTFS}
 
 # create userfs
-echo "," | sfdisk --append ${TGTDEV}
+echo "," | sfdisk --append ${TGTDEV} --force
 partx -u ${TGTDEV}
 partx -u ${TGTPART_USERFS}
 mkfs.ext4 ${TGTPART_USERFS}
@@ -38,6 +38,7 @@ echo "RESIZED=1" | tee -a /etc/environment
 
 echo "Adding Swap"
 fallocate -l 2G /var/swap
+chmod 0600 /var/swap
 mkswap /var/swap
 echo "/var/swap none swap sw 0 0" >> /etc/fstab
 swapon /var/swap
