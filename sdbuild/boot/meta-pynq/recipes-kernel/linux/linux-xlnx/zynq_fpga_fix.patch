@@ -1,0 +1,86 @@
+From a6557082c7773d08a58e875362b62105ea2efbd3 Mon Sep 17 00:00:00 2001
+From: Ben Coughlan <ben@liquidinstruments.com>
+Date: Wed, 22 Aug 2018 16:38:22 +1000
+Subject: [PATCH 2/3] fpga: zynq: corrected PL reset action.  Assume always
+ encrypted
+
+---
+ drivers/fpga/zynq-fpga.c | 37 ++++++++++++-------------------------
+ 1 file changed, 12 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/fpga/zynq-fpga.c b/drivers/fpga/zynq-fpga.c
+index 70b15b303471..1e5baee63262 100644
+--- a/drivers/fpga/zynq-fpga.c
++++ b/drivers/fpga/zynq-fpga.c
+@@ -301,6 +301,8 @@ static int zynq_fpga_ops_write_init(struct fpga_manager *mgr,
+ 		regmap_write(priv->slcr, SLCR_LVL_SHFTR_EN_OFFSET,
+ 			     LVL_SHFTR_ENABLE_PS_TO_PL);
+ 
++		zynq_fpga_write(priv, INT_STS_OFFSET, IXR_ALL_MASK);
++
+ 		/* create a rising edge on PCFG_INIT. PCFG_INIT follows
+ 		 * PCFG_PROG_B, so we need to poll it after setting PCFG_PROG_B
+ 		 * to make sure the rising edge actually happens.
+@@ -308,23 +310,10 @@ static int zynq_fpga_ops_write_init(struct fpga_manager *mgr,
+ 		 * UG585 v1.10 page 211
+ 		 */
+ 		ctrl = zynq_fpga_read(priv, CTRL_OFFSET);
+-		ctrl |= CTRL_PCFG_PROG_B_MASK;
+-
+-		zynq_fpga_write(priv, CTRL_OFFSET, ctrl);
+-
+-		err = zynq_fpga_poll_timeout(priv, STATUS_OFFSET, status,
+-					     status & STATUS_PCFG_INIT_MASK,
+-					     INIT_POLL_DELAY,
+-					     INIT_POLL_TIMEOUT);
+-		if (err) {
+-			dev_err(&mgr->dev, "Timeout waiting for PCFG_INIT\n");
+-			goto out_err;
+-		}
++		zynq_fpga_write(priv, CTRL_OFFSET, ctrl | CTRL_PCFG_PROG_B_MASK);
+ 
+ 		ctrl = zynq_fpga_read(priv, CTRL_OFFSET);
+-		ctrl &= ~CTRL_PCFG_PROG_B_MASK;
+-
+-		zynq_fpga_write(priv, CTRL_OFFSET, ctrl);
++		zynq_fpga_write(priv, CTRL_OFFSET, ctrl & ~CTRL_PCFG_PROG_B_MASK);
+ 
+ 		err = zynq_fpga_poll_timeout(priv, STATUS_OFFSET, status,
+ 					     !(status & STATUS_PCFG_INIT_MASK),
+@@ -335,10 +324,12 @@ static int zynq_fpga_ops_write_init(struct fpga_manager *mgr,
+ 			goto out_err;
+ 		}
+ 
++		msleep(5);
++
+ 		ctrl = zynq_fpga_read(priv, CTRL_OFFSET);
+-		ctrl |= CTRL_PCFG_PROG_B_MASK;
++		zynq_fpga_write(priv, CTRL_OFFSET, ctrl | CTRL_PCFG_PROG_B_MASK);
+ 
+-		zynq_fpga_write(priv, CTRL_OFFSET, ctrl);
++		zynq_fpga_write(priv, INT_STS_OFFSET, IXR_PCFG_DONE_MASK);
+ 
+ 		err = zynq_fpga_poll_timeout(priv, STATUS_OFFSET, status,
+ 					     status & STATUS_PCFG_INIT_MASK,
+@@ -356,15 +347,11 @@ static int zynq_fpga_ops_write_init(struct fpga_manager *mgr,
+ 	 * - set CPU in user mode
+ 	 */
+ 	ctrl = zynq_fpga_read(priv, CTRL_OFFSET);
+-	if (info->flags & FPGA_MGR_ENCRYPTED_BITSTREAM)
+-		zynq_fpga_write(priv, CTRL_OFFSET,
+-				(CTRL_PCAP_PR_MASK | CTRL_PCAP_MODE_MASK
+-				 | CTRL_PCAP_RATE_EN_MASK | ctrl));
+-	else
+-		zynq_fpga_write(priv, CTRL_OFFSET,
+-				(CTRL_PCAP_PR_MASK | CTRL_PCAP_MODE_MASK
+-				 | ctrl));
+ 
++	//TODO Not sure where FPGA_MGR_ENCRYPTED_BITSTREAM is set, so this works for both cases
++	zynq_fpga_write(priv, CTRL_OFFSET,
++			(CTRL_PCAP_PR_MASK | CTRL_PCAP_MODE_MASK
++			 | CTRL_PCAP_RATE_EN_MASK | ctrl));
+ 
+ 	/* We expect that the command queue is empty right now. */
+ 	status = zynq_fpga_read(priv, STATUS_OFFSET);
+-- 
+2.17.1
