@@ -9,7 +9,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "bionic", primary: true do |bionic|
 		bionic.vm.box = "ubuntu/bionic64"
 		bionic.vm.synced_folder ".", "/pynq", 
-			owner: "vagrant", group: "vagrant"
+			owner: "vagrant", group: "vagrant",
+			rsync__args: ["--verbose", "--archive", "--delete", "-z"]
 		bionic.vm.provider "virtualbox" do |vb|
 			vb.gui = true
 			vb.name = "pynq_ubuntu_18_04"
@@ -59,7 +60,7 @@ Vagrant.configure("2") do |config|
 			inline: "/bin/bash /pynq/sdbuild/scripts/setup_host.sh"
 
 		bionic.vm.provision "shell", 
-			inline: "apt-get install -y --force-yes ubuntu-desktop"
+			inline: "DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes ubuntu-desktop"
 
 		bionic.vm.provision "shell", inline: <<-SHELL
 			cat /root/.profile | grep PATH >> /home/vagrant/.profile

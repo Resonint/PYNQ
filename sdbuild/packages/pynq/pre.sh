@@ -34,7 +34,7 @@ if [ ${PYNQ_BOARD} != "Unknown" ]; then
 fi
 
 # move revision onto target
-sudo cp -rf $BUILD_ROOT/PYNQ/REVISION $target/home/xilinx/REVISION
+# sudo cp -rf $BUILD_ROOT/PYNQ/REVISION $target/home/xilinx/REVISION
 sudo cp -rf $BUILD_ROOT/PYNQ/REVISION $target/boot/REVISION
 
 if [ -d /usr/local/share/fatfs_contents ]; then

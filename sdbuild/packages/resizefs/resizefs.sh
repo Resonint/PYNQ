@@ -30,8 +30,6 @@ partx -u ${TGTDEV}
 partx -u ${TGTPART_USERFS}
 mkfs.ext4 ${TGTPART_USERFS}
 mkdir -p ${TGTDIR_USERFS}
-chown xilinx:xilinx ${TGTDIR_USERFS}
-chmod +rw ${TGTDIR_USERFS}
 echo "${TGTPART_USERFS} ${TGTDIR_USERFS} ext4 defaults 0 0" >> /etc/fstab
 
 echo "RESIZED=1" | tee -a /etc/environment
@@ -44,5 +42,8 @@ echo "/var/swap none swap sw 0 0" >> /etc/fstab
 swapon /var/swap
 
 mount -a
+
+chown xilinx:xilinx ${TGTDIR_USERFS}
+chmod +rw ${TGTDIR_USERFS}
 
 echo "Done!"

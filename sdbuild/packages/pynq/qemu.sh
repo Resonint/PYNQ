@@ -11,7 +11,7 @@ export HOME=/root
 export BOARD=${PYNQ_BOARD}
 
 cd /home/xilinx
-mkdir -p jupyter_notebooks
+# mkdir -p jupyter_notebooks
 
 
 cd pynq_git
@@ -27,11 +27,11 @@ rm -rf jupyter_notebooks_*
 cd /root
 
 pynq_dir="$(pip3 show pynq | grep '^Location' | cut -d : -f 2)/pynq"
-if [ ! -e /home/xilinx/pynq ]; then
-  ln -s $pynq_dir /home/xilinx/pynq
-fi
-chown xilinx:xilinx /home/xilinx/REVISION
-chown xilinx:xilinx -R /home/xilinx/pynq
-chown xilinx:xilinx -R /home/xilinx/jupyter_notebooks
+# if [ ! -e /home/xilinx/pynq ]; then
+#   ln -s $pynq_dir /home/xilinx/pynq
+# fi
+# chown xilinx:xilinx /home/xilinx/REVISION
+# chown xilinx:xilinx -R /home/xilinx/pynq
+# chown xilinx:xilinx -R /home/xilinx/jupyter_notebooks
 chown xilinx:xilinx -R $pynq_dir
 systemctl enable pl_server

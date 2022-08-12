@@ -3,135 +3,190 @@ export HOME=/root
 set -x
 set -e
 
-
-# Captured using pip3 freeze on image after packages installed with no versions
 cd /root
+
+#
+# used first time to install latest versions
+#
+
+# cat > requirements.txt <<EOT
+# pynq
+# jupyterlab
+# notebook
+# numpy
+# pandas
+# scipy
+# matplotlib
+# pyzmq
+# pyyaml==5.4.1
+# pyelftools
+# msgpack
+# msgpack-numpy
+# bokeh
+# panel
+# voila
+# voila-gridstack
+# EOT
+
+#
+# used for consistent build
+#
+
 cat > requirements.txt <<EOT
-alabaster==0.7.12
-anyio==3.1.0
-argon2-cffi==20.1.0
-async-generator==1.10
-Babel==2.9.1
+aiohttp==3.8.1
+aiosignal==1.2.0
+anyio==3.6.1
+argon2-cffi==21.3.0
+argon2-cffi-bindings==21.2.0
+asttokens==2.0.5
+async-timeout==4.0.2
+attrs==22.1.0
+Babel==2.10.3
 backcall==0.2.0
-bleach==3.3.0
-Brotli==1.0.9
-cffi==1.14.5
-click==8.0.1
-CppHeaderParser==2.7.4
-Cython==0.29.24
-dash==2.0.0
-dash-bootstrap-components==0.13.1
-dash-core-components==2.0.0
-dash-html-components==2.0.0
-dash-renderer==1.9.1
-dash-table==5.0.0
+beautifulsoup4==4.11.1
+bleach==5.0.1
+bokeh==2.4.3
+certifi==2022.6.15
+cffi==1.15.1
+charset-normalizer==2.1.0
+cycler==0.11.0
+debugpy==1.6.2
+decorator==5.1.1
 defusedxml==0.7.1
-deltasigma==0.2.2
-docutils==0.17.1
-Flask==2.0.1
-Flask-Compress==1.10.1
-gTTS==2.2.3
-imagesize==1.2.0
-imutils==0.5.4
-ipykernel==5.5.5
-ipython==7.24.0
-ipywidgets==7.6.3
-itsdangerous==2.0.1
-jedi==0.17.2
-Jinja2==3.0.1
-json5==0.9.5
-jsonschema==3.2.0
-jupyter==1.0.0
-jupyter-client==6.1.12
-jupyter-console==6.4.0
-jupyter-contrib-core==0.3.3
-jupyter-contrib-nbextensions==0.5.1
-jupyter-core==4.7.1
-jupyter-highlight-selected-word==0.2.0
-jupyter-latex-envs==1.4.6
-jupyter-nbextensions-configurator==0.4.1
-jupyter-server==1.8.0
-jupyterlab==3.0.16
-jupyterlab-pygments==0.1.2
-jupyterlab-server==2.5.2
-jupyterlab-widgets==1.0.0
-jupyterplot==0.0.3
-lrcurve==1.1.0
-MarkupSafe==2.0.1
-matplotlib-inline==0.1.2
+entrypoints==0.4
+executing==0.9.1
+fastjsonschema==2.16.1
+fonttools==4.34.4
+frozenlist==1.3.1
+future==0.18.2
+gevent==21.12.0
+greenlet==1.1.2
+idna==3.3
+importlib-metadata==4.12.0
+importlib-resources==5.9.0
+ipykernel==6.15.1
+ipython==8.4.0
+ipython-genutils==0.2.0
+jedi==0.18.1
+Jinja2==3.1.2
+json5==0.9.9
+jsonschema==4.9.1
+jupyter-client==7.3.4
+jupyter-core==4.11.1
+jupyter-server==1.18.1
+jupyter-server-proxy==3.2.1
+jupyterlab==3.4.4
+jupyterlab-pygments==0.2.2
+jupyterlab-server==2.15.0
+jupyterlab-widgets==1.1.1
+kiwisolver==1.4.4
+Markdown==3.4.1
+MarkupSafe==2.1.1
+matplotlib==3.5.2
+matplotlib-inline==0.1.3
 mistune==0.8.4
-nbclassic==0.3.1
-nbclient==0.5.3
-nbconvert==6.0.7
-nbformat==5.1.3
-nbsphinx==0.8.7
-nbwavedrom==0.2.0
-nest-asyncio==1.5.1
-netifaces==0.11.0
-notebook==6.4.0
-numpy==1.20.3
-pandas==1.3.3
-pandocfilters==1.4.3
-parsec==3.9
-parso==0.7.1
-patsy==0.5.1
-pbr==5.6.0
+msgpack==1.0.4
+msgpack-numpy==0.4.8
+multidict==6.0.2
+nbclassic==0.4.3
+nbclient==0.5.13
+nbconvert==6.5.0
+nbformat==5.4.0
+nest-asyncio==1.5.5
+notebook==6.4.12
+notebook-shim==0.1.0
+numpy==1.23.1
+packaging==21.3
+pandas==1.4.3
+pandocfilters==1.5.0
+panel==0.13.1
+param==1.12.2
+parso==0.8.3
 pexpect==4.8.0
-pip==21.2.1
+pickleshare==0.7.5
+Pillow==9.2.0
 pkg_resources==0.0.0
-plotly==5.1.0
-prometheus-client==0.10.1
-prompt-toolkit==3.0.18
-psutil==5.8.0
+pkgutil_resolve_name==1.3.10
+prometheus-client==0.14.1
+prompt-toolkit==3.0.30
+psutil==5.9.1
 ptyprocess==0.7.0
-PyAudio==0.2.11
-pybind11==2.8.0
-pycairo==1.20.1
-pycurl==7.43.0.2
-pyeda==0.28.0
-Pygments==2.9.0
-pyrsistent==0.17.3
-pyzmq==22.1.0
-qtconsole==5.1.0
-QtPy==1.9.0
-rise==5.7.1
-roman==3.3
-Send2Trash==1.5.0
-setproctitle==1.2.2
-setuptools==44.0.0
-simplegeneric==0.8.1
+pure-eval==0.2.2
+pycparser==2.21
+pyct==0.4.8
+pyelftools==0.28
+Pygments==2.12.0
+pynq==2.7.0
+pyparsing==3.0.9
+pyrsistent==0.18.1
+pyserial==3.5
+python-dateutil==2.8.2
+pytz==2022.1
+pyviz-comms==2.2.0
+PyYAML==5.4.1
+pyzmq==23.2.0
+requests==2.28.1
+scipy==1.9.0
+Send2Trash==1.8.0
+simpervisor==0.4
+six==1.16.0
 sniffio==1.2.0
-snowballstemmer==2.1.0
-SpeechRecognition==3.8.1
-Sphinx==4.2.0
-sphinx-rtd-theme==1.0.0
-sphinxcontrib-applehelp==1.0.2
-sphinxcontrib-devhelp==1.0.2
-sphinxcontrib-htmlhelp==2.0.0
-sphinxcontrib-jsmath==1.0.1
-sphinxcontrib-qthelp==1.0.3
-sphinxcontrib-serializinghtml==1.1.5
-tenacity==8.0.0
-terminado==0.10.0
-testpath==0.5.0
-testresources==2.0.1
-tornado==6.1
-tqdm==4.62.3
-traitlets==5.0.5
-voila==0.2.10
-voila-gridstack==0.2.0
-websocket-client==1.0.1
-Werkzeug==2.0.1
-widgetsnbextension==3.5.1
-wurlitzer==3.0.2
+soupsieve==2.3.2.post1
+stack-data==0.3.0
+terminado==0.15.0
+tinycss2==1.1.1
+tornado==6.2
+tqdm==4.64.0
+traitlets==5.3.0
+typing_extensions==4.3.0
+urllib3==1.26.11
+voila==0.3.6
+voila-gridstack==0.3.0
+wcwidth==0.2.5
+webencodings==0.5.1
+websocket-client==1.3.3
+websockets==10.3
+yarl==1.8.1
+zerorpc==0.6.3
+zipp==3.8.1
+zope.event==4.5.0
+zope.interface==5.4.0
 EOT
+
+
+# node is required for jupyter
+if [ ${ARCH} == 'arm' ]; then
+	export NODE_OPTIONS=--max-old-space-size=2048
+else
+	export NODE_OPTIONS=--max-old-space-size=4096
+fi
+
+# install nodejs 12
+curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+echo deb https://deb.nodesource.com/node_12.x focal main > /etc/apt/sources.list.d/nodesource.list
+
+# TODO fix hang on the apt-get install...
+# apt-get update && apt-get install -y nodejs
+if [ ${ARCH} == 'arm' ]; then
+    wget https://deb.nodesource.com/node_12.x/pool/main/n/nodejs/nodejs_12.22.6-deb-1nodesource1_armhf.deb
+    dpkg -i *.deb
+    rm -rf *.deb
+else
+    wget https://deb.nodesource.com/node_12.x/pool/main/n/nodejs/nodejs_12.22.6-deb-1nodesource1_arm64.deb
+    dpkg -i *.deb
+    rm -rf *.deb
+fi
+
+# blas is required for numpy
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -yq libopenblas-dev
 
 export PYNQ_VENV=/usr/local/share/pynq-venv
 
-python3 -m venv --system-site-packages $PYNQ_VENV
+python3 -m venv $PYNQ_VENV
 echo "source $PYNQ_VENV/bin/activate" > /etc/profile.d/pynq_venv.sh
 source /etc/profile.d/pynq_venv.sh
 
-python3 -m pip install pip==21.2.4
+python3 -m pip install pip==22.2.2
 python3 -m pip install -r requirements.txt
 rm requirements.txt
