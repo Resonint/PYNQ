@@ -1,0 +1,14 @@
+[Unit]
+Description=matipo service with docker compose
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+WorkingDirectory=/home/xilinx/
+ExecStart=/usr/bin/docker compose -f /etc/matipo/docker-compose.yml up -d --remove-orphans
+ExecStop=/usr/bin/docker compose -f /etc/matipo/docker-compose.yml down
+
+[Install]
+WantedBy=multi-user.target
