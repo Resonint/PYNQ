@@ -19,8 +19,17 @@ if [[ ${RESIZED} -eq "1" ]]; then
 	exit 0
 fi
 
+bytes_total=$(sfdisk --list /dev/sdc | sed -rn 's/^Disk \/dev.*, ([0-9]*) bytes.*$/\1/p')
+part_size=14G
+
+if [[ $bytes_total -gt 20000000000 ]]
+then
+  part_size=20G
+fi
+
+
 # resize rootfs
-echo ",14G" | sfdisk -N 2 ${TGTDEV} --force
+echo ",$part_size" | sfdisk -N 2 ${TGTDEV} --force
 partx -u ${TGTPART_ROOTFS}
 resize2fs ${TGTPART_ROOTFS}
 
