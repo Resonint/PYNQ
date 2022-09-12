@@ -10,6 +10,7 @@ pynq_hostname.sh ilumr
 
 # TODO: enable service to run docker container(s)
 systemctl enable matipo
+systemctl enable poweroff-server
 
 echo "xilinx ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # fix, for some reason /etc/sudoers.d/README get wrong owner

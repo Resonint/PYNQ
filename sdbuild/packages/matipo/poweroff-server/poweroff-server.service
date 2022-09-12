@@ -1,0 +1,10 @@
+[Unit]
+Description=simple server to allow poweroff by http request
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/bin/poweroff-server.py 8100
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
