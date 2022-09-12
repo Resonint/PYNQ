@@ -21,3 +21,6 @@ rm -rf *.deb
 rm -rf *.deb
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq docker-ce docker-ce-cli docker-compose-plugin
+
+getent group docker || groupadd docker
+usermod -aG docker xilinx
