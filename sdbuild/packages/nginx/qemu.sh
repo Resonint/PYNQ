@@ -58,7 +58,7 @@ cat > /usr/share/nginx/jupyter_50x.html << EOF
     <h1>JupyterLab is starting</h1>
     <p>This may take a few minutes.</p>
   <!--# else -->
-    <h1><!--# echo var="status" default="" --> <!--# echo var="status_text" default="Something goes wro>
+    <h1><!--# echo var="status" default="" --> <!--# echo var="status_text" default="Unknown error" -->
   <!--# endif -->
 </body>
 </html>
