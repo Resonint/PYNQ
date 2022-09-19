@@ -10,7 +10,7 @@ services:
       com.centurylinklabs.watchtower.enable: true
   driver:
     container_name: matipo-driver
-    image: camerondykstra/ilumr:test
+    image: camerondykstra/ilumr:latest
     command: /usr/local/bin/python -m matipo.system_daemon
     restart: unless-stopped
     volumes:
@@ -35,7 +35,7 @@ services:
         max-size: 100M
   jupyter:
     container_name: jupyter
-    image: camerondykstra/ilumr:test
+    image: camerondykstra/ilumr:latest
     expose:
       - 8080
     ports:
