@@ -1,13 +1,16 @@
 version: "3.9"
 services:
+  nginx:
+    image: camerondykstra/matipo-nginx:latest
+    ports:
+      - "80:80"
+    links:
+      - "jupyter:backend"
+    labels:
+      com.centurylinklabs.watchtower.enable: true
   driver:
     container_name: matipo-driver
     image: camerondykstra/ilumr:test
-    expose:
-      - 5556
-      - 5557
-      - 5558
-      - 5559
     command: /usr/local/bin/python -m matipo.system_daemon
     restart: unless-stopped
     volumes:
@@ -17,10 +20,7 @@ services:
       - /home/xilinx/user/.cache/:/root/.cache/:rw
       - /home/xilinx/user/.local/:/root/.local/:rw
     environment:
-      - ZMQ_RPC_BIND=tcp://*:5556
-      - ZMQ_PUBSUB_BIND=tcp://*:5557
-      - ZMQ_SEQ_REQ_BIND=tcp://*:5558
-      - ZMQ_SEQ_EVENT_BIND=tcp://*:5559
+      - ZMQ_BIND_ADDR=tcp://*
       - WATCHTOWER_HTTP_API_TOKEN=matipoupdatetoken
       - WATCHTOWER_ADDRESS=http://watchtower:8080
       - POWEROFF_ADDRESS=http://host.docker.internal:8100
@@ -36,9 +36,11 @@ services:
   jupyter:
     container_name: jupyter
     image: camerondykstra/ilumr:test
+    expose:
+      - 8080
     ports:
       - "8080:8080"
-    command: /usr/local/bin/jupyter lab --port=8080 --ip=0.0.0.0 --ServerApp.root_dir='/home/' --ServerApp.token='' --ServerApp.password='' --no-browser --allow-root
+    command: /usr/local/bin/jupyter lab --port=8080 --ip=0.0.0.0 --no-browser --allow-root
     restart: unless-stopped
     volumes:
       - /etc/matipo/:/etc/matipo/:r
@@ -46,12 +48,8 @@ services:
       - /home/xilinx/user/.cache/:/root/.cache/:rw
       - /home/xilinx/user/.jupyter/:/root/.jupyter/:rw
       - /home/xilinx/user/.local/:/root/.local/:rw
-      - /home/xilinx/globals/:/root/globals/:rw
     environment:
-      - ZMQ_RPC_CONNECT=tcp://driver:5556
-      - ZMQ_PUBSUB_CONNECT=tcp://driver:5557
-      - ZMQ_SEQ_REQ_CONNECT=tcp://driver:5558
-      - ZMQ_SEQ_EVENT_CONNECT=tcp://driver:5559
+      - ZMQ_CONNECT_ADDR=tcp://driver
       - WATCHTOWER_HTTP_API_TOKEN=matipoupdatetoken
       - WATCHTOWER_ADDRESS=http://watchtower:8080
       - POWEROFF_ADDRESS=http://host.docker.internal:8100
@@ -59,7 +57,7 @@ services:
       - "host.docker.internal:host-gateway"
     labels:
       com.centurylinklabs.watchtower.enable: true
-    privileged: true # TODO: don't use privileged, use cap_add and seccomp
+    privileged: true
     logging:
       driver: local
       options:
