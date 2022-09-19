@@ -19,10 +19,10 @@ if [[ ${RESIZED} -eq "1" ]]; then
 	exit 0
 fi
 
-bytes_total=$(sfdisk --list /dev/sdc | sed -rn 's/^Disk \/dev.*, ([0-9]*) bytes.*$/\1/p')
+bytes_total=$(sfdisk --list ${TGTDEV} | sed -rn 's/^Disk \/dev.*, ([0-9]*) bytes.*$/\1/p')
 part_size=14G
 
-if [[ $bytes_total -gt 20000000000 ]]
+if [[ $bytes_total -gt "20000000000" ]]
 then
   part_size=20G
 fi
