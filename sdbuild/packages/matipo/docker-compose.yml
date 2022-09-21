@@ -4,13 +4,22 @@ services:
     image: camerondykstra/matipo-nginx:latest
     ports:
       - "80:80"
-    links:
-      - "jupyter:backend"
+      - "443:443"
+    networks:
+      - network
     labels:
+      com.centurylinklabs.watchtower.depends-on: jupyter
       com.centurylinklabs.watchtower.enable: true
   driver:
     container_name: matipo-driver
     image: camerondykstra/ilumr:latest
+    ports:
+      - "5556:5556"
+      - "5557:5557"
+      - "5558:5558"
+      - "5559:5559"
+    networks:
+      - network
     command: /usr/local/bin/python -m matipo.system_daemon
     restart: unless-stopped
     volumes:
@@ -40,6 +49,10 @@ services:
       - 8080
     ports:
       - "8080:8080"
+    networks:
+      network:
+        aliases:
+          - server
     command: /usr/local/bin/jupyter lab --port=8080 --ip=0.0.0.0 --no-browser --allow-root
     restart: unless-stopped
     volumes:
@@ -69,6 +82,8 @@ services:
       - "8081:8080"
     expose:
       - 8080
+    networks:
+      - network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -81,3 +96,6 @@ services:
       driver: local
       options:
         max-size: 10M
+networks:
+  network:
+    # default

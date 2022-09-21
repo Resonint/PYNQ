@@ -7,7 +7,7 @@ target=$1
 target_dir=root/.cache/pip
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-sudo cp -r $script_dir/system/ $target/home/xilinx/
+# sudo cp -r $script_dir/system/ $target/home/xilinx/
 
 sudo mkdir -p $target/etc/matipo/
 sudo cp $script_dir/docker-compose.yml $target/etc/matipo/
